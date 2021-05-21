@@ -12,7 +12,8 @@
 #include <arpa/inet.h>
 #include <netinet/tcp.h>
 
-#define MAX_PORTS 100
+#define MAX_PORTS 1
+#define MAX_CONNS 50000
 
 int main(int argc, char **argv){
 	if(argc <=  2){
@@ -28,13 +29,13 @@ int main(int argc, char **argv){
 	socklen_t optlen;
 	int connections = 0;
 
-	memset(&addr, sizeof(addr), 0);
+	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
 	inet_pton(AF_INET, ip, &addr.sin_addr);
 
 	char tmp_data[10];
 	int index = 0;
-	while(1){
+	while(connections < MAX_CONNS){
 		if(++index >= MAX_PORTS){
 			index = 0;
 		}
@@ -56,7 +57,7 @@ int main(int argc, char **argv){
 		if(connections % 1000 == 999){
 			//printf("press Enter to continue: ");
 			//getchar();
-			printf("connections: %d, fd: %d\n", connections, sock);
+			printf("connections: %d/%d, fd: %d\n", connections, MAX_CONNS, sock);
 		}
 		usleep(1 * 1000);
 
@@ -64,6 +65,10 @@ int main(int argc, char **argv){
 		setsockopt(sock, SOL_SOCKET, SO_SNDBUF, &bufsize, sizeof(bufsize));
 		setsockopt(sock, SOL_SOCKET, SO_RCVBUF, &bufsize, sizeof(bufsize));
 	}
+
+    printf("done, connections: %d/%d\n", connections, MAX_CONNS);
+    printf("press Enter to exit: ");
+    getchar();
 
 	return 0;
 sock_err:

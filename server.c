@@ -13,7 +13,7 @@
 #include <netinet/tcp.h>
 #include <sys/select.h>
 
-#define MAX_PORTS 100
+#define MAX_PORTS 1
 
 int main(int argc, char **argv){
 	if(argc <  2){
